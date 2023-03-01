@@ -5,14 +5,21 @@ import test from "tape";
 
 const isWin = process.platform === "win32";
 
+const getManifest = () => {
+  return JSON.parse(readFileSync(resolve(__dirname, "..", "package.json"), "utf-8"));
+};
+
+const { engines = {} } = getManifest();
+
 const updatePackage = (values: { engines?: { node?: string; yarn?: string } }): void => {
-  const content = JSON.parse(readFileSync(resolve(__dirname, "..", "package.json"), "utf-8"));
+  const content = getManifest();
   delete content.engines;
   Object.assign(content, values);
-  writeFileSync(resolve(__dirname, "..", "package.json"), JSON.stringify(content, undefined, "  "));
+  writeFileSync(resolve(__dirname, "..", "package.json"), JSON.stringify(content, undefined, "  ") + "\n");
 };
 
 const install = (options: { env?: Record<string, unknown> } = {}): { stdout: string; status: number } => {
+  // @ts-ignore
   return spawnSync(isWin ? "yarn.cmd" : "yarn", {
     cwd: resolve(__dirname, ".."),
     encoding: "utf-8",
@@ -21,6 +28,7 @@ const install = (options: { env?: Record<string, unknown> } = {}): { stdout: str
 };
 
 const build = (options: { env?: Record<string, unknown> } = {}): { stderr: string; status: number } => {
+  // @ts-ignore
   return spawnSync(isWin ? "yarn.cmd" : "yarn", ["build"], {
     cwd: resolve(__dirname, ".."),
     encoding: "utf-8",
@@ -210,4 +218,10 @@ test("allows script execution when plugin is disabled using environment variable
   const { status: exitCode } = build({ env: { PLUGIN_YARN_ENGINES_DISABLE: "1" } });
 
   t.equal(exitCode, 0);
+});
+
+test("should reset", (t) => {
+  t.plan(1);
+  updatePackage({ engines });
+  t.equal(1, 1);
 });

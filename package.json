@@ -20,5 +20,9 @@
     "format:check": "prettier --check '{src,test}/**/*.ts'",
     "build": "builder build plugin && yarn plugin import ./bundles/@yarnpkg/plugin-engines.js",
     "test": "tape -r ts-node/register test/test.ts"
+  },
+  "engines": {
+    "node": ">=18",
+    "yarn": ">=3"
   }
 }

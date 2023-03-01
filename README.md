@@ -1,6 +1,32 @@
 # yarn-plugin-engines
 
-Yarn Berry plugin to enforce Node version.
+> Yarn Berry plugin to enforce Node version.
+
+## ContaAzul
+
+**While we update all projects to support Yarn 3+, there is an annoying feature in Yarn 1 that deep checks node and yarn versions from dependencies and breaks our pipelines installations.**
+
+**In order to avoid it and still manage to control theses versions in development while keeping our pipelines intact, we added `selfEngines` to act as `engines` in those already migrated Yarn 3 projects.**
+
+**When all migrations are finished, we can rollback to the original plugin and delete this fork.**
+
+To use it, import from out fork:
+
+```sh
+yarn plugin import https://raw.githubusercontent.com/ContaAzul/yarn-plugin-engines/main/bundles/%40yarnpkg/plugin-engines.js
+```
+
+So, just use it like `engines` field inside `package.json`, just replacing for `selfEngines`:
+
+```json
+{
+  "name": "my-package",
+  "selfEngines": {
+    "node": ">=18",
+    "yarn": ">=3"
+  }
+}
+```
 
 ## Installation
 

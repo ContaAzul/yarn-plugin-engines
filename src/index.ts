@@ -7,18 +7,20 @@ import {
   YarnEngineChecker,
 } from "./engine-checkers";
 
-const verifyEngines =
-  (errorReporter: ErrorReporter) =>
-  (project: Project): void => {
+function verifyEngines(errorReporter: ErrorReporter) {
+  return function (project: Project): void {
     if (process.env.PLUGIN_YARN_ENGINES_DISABLE != null) {
       return;
     }
 
-    const { engines = {} } = project.getWorkspaceByCwd(project.cwd).manifest.raw;
+    const { selfEngines = {}, engines = {} } = project.getWorkspaceByCwd(project.cwd).manifest.raw;
     const options: EngineCheckerOptions = { project, errorReporter };
     const engineCheckers: EngineChecker[] = [new NodeEngineChecker(options), new YarnEngineChecker(options)];
-    engineCheckers.forEach((engineChecker) => engineChecker.verifyEngine(engines));
+    engineCheckers.forEach((engineChecker) =>
+      engineChecker.verifyEngine(Object.keys(selfEngines).length ? selfEngines : engines)
+    );
   };
+}
 
 const plugin: Plugin = {
   hooks: {
